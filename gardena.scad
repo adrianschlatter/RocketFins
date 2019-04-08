@@ -6,11 +6,11 @@ Units in this file: Millimeter.
 
 */
 
-use <threads.scad>
+use <threadlib/threadlib.scad>
 
 // Generic
 
-module gasket (r0=8, r1=12.5, d=3) {
+module gasket (r0=8, r1=12.5, d=3, $fn=120) {
     /*
     Flat ring gasket
     ++++++++++++++++
@@ -28,57 +28,23 @@ module gasket (r0=8, r1=12.5, d=3) {
         }
 };
 
-module nozzle (radii=[16.8, 7, 10, 4.5, 8.5], zs=[-12, -14, -18, -18, -24, -22, -38],
-                dthread=26.441, pthread=25.4/14)
+module nozzle(type="G1", section=[[16.8, 0], [19.5, 0], [19.5, -14], [10, -14],
+                                   [10, -18], [8, -22], [8, -38], [4.5, -38],
+                                   [4.5, -21], [7, -17], [7, -12], [16.8, -12]], $fn=120)
 {
-    /*
-    Gardena nozzle
-    +++++++++++++
-    
-    radii:     List of 5 radii
-    zs:        List of 7 z
-    dthread:   Thread diameter
-    pthread:   Thread pitch
-    */
-  
-    translate([0, 0, -zs[0]])
-        difference() {
-            color("Gray")
-                union() {
-                    translate([0, 0, zs[1]])
-                        cylinder(h=-zs[1], r=radii[0]);
-                    translate([0, 0, zs[3]])
-                        cylinder(h=zs[1]-zs[3], r=radii[2]);
-                    translate([0, 0, zs[5]])
-                        cylinder(h=zs[3]-zs[5], r1=radii[4], r2=radii[2]);
-                    translate([0, 0, zs[6]])
-                        cylinder(h=zs[5]-zs[6], r=radii[4]);
-                };
+    designator = str(type, "-int");
+    P = thread_specs(designator)[0];
+    turns = (section[0][1] - section[11][1] - P) / P;
+    union() {
+        translate([0, 0, -section[11][1]])
+            rotate_extrude()
+                polygon(points=section);
+        translate([0, 0, P / 2])
+            thread(designator, turns=turns);
+    };
+};
 
-            color("Gray")
-                translate([0, 0, zs[0]])
-                    metric_thread(dthread, pthread,
-                                   -2*zs[0], angle=27.5, internal=true);
-                        
-            color("Navy")
-                    union() {
-                        translate([0, 0, zs[2]])
-                            cylinder(h=-zs[2], r=radii[1]);
-
-                        translate([0, 0, zs[2]])
-                            cylinder(h=zs[2]-zs[3]+0.001, r=radii[1]);
-                        
-                        translate([0, 0, zs[4]])
-                            cylinder(h=zs[2]-zs[4]+0.002, r1=radii[3], r2=radii[1]);
-                        
-                        translate([0, 0, zs[6]-0.002])
-                            cylinder(h=-zs[6], r=radii[3]);
-                    };
-            };
-};    
-
-
-// Special
+// Special Cases
 
 module gasket_gardena_G3o4() {
     gasket();
@@ -89,20 +55,23 @@ module gasket_gardena_G1() {
 };
 
 module nozzle_gardena_G3o4 () {
-    nozzle();
+    nozzle(type="G3/4", section=[[13.25, 0], [16.5, 0], [16.5, -14], [10, -14],
+                                 [10, -18], [8, -21], [8, -37.7], [4.5, -37.7],
+                                 [4.5, -20], [7, -17], [7, -12], [13.25, -12]]);
 };
 
 module nozzle_gardena_G1 () {
-    nozzle(radii=[19.6, 7, 10, 4.5, 8.5], zs=[-12, -14, -18, -18, -24, -22, -38],
-                dthread=33.249, pthread=25.4/11);
+    nozzle();
 };
 
+
+// Demo
 intersection() {
     translate([-50, 0, -50])
         color("Green")
             cube(100, 100, 100);
     union() {
-        gasket_gardena_G1();
-        nozzle_gardena_G1();
+        gasket_gardena_G3o4();
+        nozzle_gardena_G3o4();
     };
 };
