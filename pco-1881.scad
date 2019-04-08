@@ -1,11 +1,11 @@
 /*
-PCO-1881 Bottle Neck
+PCO-1881 Bottle Neck Model
 
 Based on http://imajeenyus.com/mechanical/20120508_bottle_top_threads/28mm-ISBT-PCO-1881-Finish-3784253-17.pdf
-
 */
 
-use <thread_profile.scad>  // https://github.com/MisterHW/IoP-satellite
+use <threadlib/threadlib.scad>
+
 
 module pco1881 () {
     // The PCO-1881 bottle neck (approximately) as described in the spec
@@ -36,23 +36,14 @@ module pco1881 () {
                 translate([0, 0, -0.004])
                     cylinder(h=20.008, r1=21.74/2, r2=10.870);
         };
-        translate([0, 0, (1.70 + 1.92) / 2])
-            straight_thread(
-                section_profile = bottle_pco1881_neck_thread_profile(),
-                higbee_arc = 10,
-                r = bottle_pco1881_neck_thread_dia() / 2,
-                turns = 650 / 360,
-                pitch = bottle_pco1881_neck_thread_pitch(),
-                fn = 60
-            ); 
+        translate([0, 0, 2.92])
+            thread("PCO-1881-ext", turns=650/360, higbee_arc=10);
     };
 };
 
-*intersection() {
+intersection() {
     color("Green")
         translate([-50, 0, -50])
             cube(100, 100, 100);
-    pco1881();
+    !pco1881($fn=120);
 }
-
-*pco1881();
