@@ -57,12 +57,12 @@ module WaterRocketAdapter1($fn=120)
             translate([0, 0, dH + P_G1 / 2])
                 thread("G1-ext", turns=2.4);
         P_pco = thread_specs("PCO-1881-int")[0];
-        rotate([0, 0, 220])                                 // PCO-1881 threads
-            translate([0, 0, dH + P_pco / 2])
-                thread("PCO-1881-int", turns=2.1);
+        rotate([0, 0, 310])                                 // PCO-1881 threads
+            translate([0, 0, dH + 3 * P_pco / 4])
+                thread("PCO-1881-int", turns=1.95);
         difference() {                                      // fins
             translate([0, 0, 24])
-                    fins(r=0.5);
+                    fins(r=0.5, nfins=5);
             rotate_extrude()
                 polygon(points=clearance);
         };
@@ -74,16 +74,18 @@ intersection() {
     translate([-100, 0, -100])
         color("Green")
             cube([200, 200, 200]);
+    rotate([0, 0, 0])
     union() {
-        color("White")
+        rotate([0, 0, 3])
+        color("White")                                      // botte neck
             pco1881($fn=120);
-        translate([0, 0, -2.8]) {
-            rotate([0, 0, -62])
+        translate([0, 0, -2.8]) {                           // gardena nozzle
+            rotate([0, 0, -65])
                 color("Gray")
                     nozzle_gardena_G1();
-            gasket_gardena_G1();
+            gasket_gardena_G1();                            // gasket
         };
-        color("FireBrick")
+        color("FireBrick")                                  // Adapter
             !WaterRocketAdapter1();
     };
 };
