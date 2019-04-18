@@ -37,7 +37,7 @@ module WaterRocketAdapter1($fn=120)
                [Rbrim + tol, 9.5 + Hgrip], [Rbrim + tol, 15.5],
                [pco1881_Rmajor, 9.0], [pco1881_Rmajor, dH]];
     clearance = [[0, section[6][1] + 10], section[6] + [8, 10],
-                 section[7] + [0.5, 0], section[3], [32, -6], [0, -6]];
+                 section[7] + [0.5, 0], section[3], [50, -20], [0, -20]];
     union() {
         rotate_extrude()                                    // entire body of adapter
             offset(r=-1)
@@ -61,8 +61,8 @@ module WaterRocketAdapter1($fn=120)
             translate([0, 0, dH + 3 * P_pco / 4])
                 thread("PCO-1881-int", turns=1.95);
         difference() {                                      // fins
-            translate([0, 0, 24])
-                    fins(r=0.5, nfins=3);
+            translate([0, 0, 19])
+                    fins(Hcenter=60, Htip=30, r=0.5, nfins=3);
             rotate_extrude()
                 polygon(points=clearance);
         };
