@@ -10,7 +10,7 @@ directly on the gasket of the Gardena nozzle. Key design aspects:
 - minimum height (using Gardena you cannot get any shorter)
 
 :author: Adrian Schlatter
-:date: 2019-04-08
+:date: 2019-04-18
 
 */
 
@@ -39,19 +39,30 @@ module WaterRocketAdapter1($fn=120)
     clearance = [[0, section[6][1] + 10], section[6] + [8, 10],
                  section[7] + [0.5, 0], section[3], [32, -6], [0, -6]];
     union() {
-        rotate_extrude()
-            polygon(points=section);
+        rotate_extrude()                                    // entire body of adapter
+            offset(r=-1)
+                offset(delta=+1)
+                    offset(r=0.2)
+                        offset(delta=-0.2)
+                            polygon(points=section);
+
+        // Note on thread alignement:
+        // 1. Bottle neck rotation is taken as-is
+        // 2. PCO-1881 internal thread is rotated so that load-sides touch
+        // 3. G1 external thread is rotated to avoid weak (thin) places in the adapter
+        // 4. Gardena nozzle is rotated so that load-sides of threads touch
+        
         P_G1 = thread_specs("G1-ext")[0];
-        rotate([0, 0, -118])
+        rotate([0, 0, 85])                                  // G1 threads
             translate([0, 0, dH + P_G1 / 2])
                 thread("G1-ext", turns=2.4);
         P_pco = thread_specs("PCO-1881-int")[0];
-        rotate([0, 0, +94])
-            translate([0, 0, dH])
-                thread("PCO-1881-int", turns=2.4);
-        difference() {
-            translate([0, 0, 0])
-                    fins();
+        rotate([0, 0, 220])                                 // PCO-1881 threads
+            translate([0, 0, dH + P_pco / 2])
+                thread("PCO-1881-int", turns=2.1);
+        difference() {                                      // fins
+            translate([0, 0, 24])
+                    fins(r=0.5);
             rotate_extrude()
                 polygon(points=clearance);
         };
@@ -67,12 +78,12 @@ intersection() {
         color("White")
             pco1881($fn=120);
         translate([0, 0, -2.8]) {
-            rotate([0, 0, -90])
+            rotate([0, 0, -62])
                 color("Gray")
                     nozzle_gardena_G1();
             gasket_gardena_G1();
         };
         color("FireBrick")
-            WaterRocketAdapter1();
+            !WaterRocketAdapter1();
     };
 };
