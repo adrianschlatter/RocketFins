@@ -62,7 +62,7 @@ module WaterRocketAdapter1($fn=120)
                 thread("PCO-1881-int", turns=1.95);
         difference() {                                      // fins
             translate([0, 0, 24])
-                    fins(r=0.5, nfins=5);
+                    fins(r=0.5, nfins=3);
             rotate_extrude()
                 polygon(points=clearance);
         };
@@ -83,7 +83,7 @@ intersection() {
             rotate([0, 0, -65])
                 color("Gray")
                     nozzle_gardena_G1();
-            gasket_gardena_G1();                            // gasket
+            *gasket_gardena_G1();                            // gasket
         };
         color("FireBrick")                                  // Adapter
             !WaterRocketAdapter1();
