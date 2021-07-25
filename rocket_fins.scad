@@ -1,5 +1,5 @@
 /*
-WaterRocketAdapter Type 1
+Rocket Fin Adapter
 ++++++++++++++++++++++++++
 
 Connects a PCO-1881-thread bottle to a Gardena G1 nozzle. The PET bottle seals 
@@ -11,15 +11,16 @@ directly on the gasket of the Gardena nozzle. Key design aspects:
 
 :author: Adrian Schlatter
 :date: 2019-04-18
-
 */
 
 use <threadlib/threadlib.scad>
 use <gardena.scad>
-use <pco-1881.scad>
+use <bottle.scad>
 use <fins.scad>
 
-module WaterRocketAdapter1($fn=120)
+
+module rocket_fins(nfins=3, Hcenter=40, Htip=20, shift=24,
+                  clearance_r=32, clearance_z=-6, $fn=120)
 {
     tol = 0.2;
     pco1881_Rmajor = thread_specs("PCO-1881-int")[2] / 2;
@@ -37,7 +38,8 @@ module WaterRocketAdapter1($fn=120)
                [Rbrim + tol, 9.5 + Hgrip], [Rbrim + tol, 15.5],
                [pco1881_Rmajor, 9.0], [pco1881_Rmajor, dH]];
     clearance = [[0, section[6][1] + 10], section[6] + [8, 10],
-                 section[7] + [0.5, 0], section[3], [50, -20], [0, -20]];
+                 section[7] + [0.5, 0], section[3], [clearance_r, clearance_z],
+                 [0, clearance_z]];
     union() {
         rotate_extrude()                                    // entire body of adapter
             offset(r=-1)
@@ -61,8 +63,8 @@ module WaterRocketAdapter1($fn=120)
             translate([0, 0, dH + 3 * P_pco / 4])
                 thread("PCO-1881-int", turns=1.95);
         difference() {                                      // fins
-            translate([0, 0, 19])
-                    fins(Hcenter=60, Htip=30, r=0.5, nfins=3);
+            translate([0, 0, shift])
+                    fins(Hcenter=Hcenter, Htip=Htip, r=0.5, nfins=nfins);
             rotate_extrude()
                 polygon(points=clearance);
         };
@@ -76,16 +78,19 @@ intersection() {
             cube(200);
     rotate([0, 0, 0])
     union() {
-        rotate([0, 0, 3])
-        color("White")                                      // botte neck
-            pco1881($fn=120);
-        translate([0, 0, -2.8]) {                           // gardena nozzle
+        translate([0, 0, 50])
+            rotate([0, 0, 3])
+                color("Silver")                              // bottle
+                    bottle($fn=120);
+
+        color("Gold")                                  // Adapter
+            !rocket_fins();
+
+        translate([0, 0, -2.8 - 20]) {                      // gardena nozzle
             rotate([0, 0, -65])
                 color("Gray")
                     nozzle_gardena_G1();
-            *gasket_gardena_G1();                            // gasket
+            gasket_gardena_G1();                            // gasket
         };
-        color("FireBrick")                                  // Adapter
-            !WaterRocketAdapter1();
     };
 };
