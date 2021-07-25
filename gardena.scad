@@ -69,7 +69,7 @@ module nozzle_gardena_G1 () {
 intersection() {
     translate([-50, 0, -50])
         color("Green")
-            cube(100, 100, 100);
+            cube(100);
     union() {
         gasket_gardena_G3o4();
         nozzle_gardena_G3o4();
