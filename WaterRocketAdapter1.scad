@@ -73,7 +73,7 @@ module WaterRocketAdapter1($fn=120)
 intersection() {
     translate([-100, 0, -100])
         color("Green")
-            cube([200, 200, 200]);
+            cube(200);
     rotate([0, 0, 0])
     union() {
         rotate([0, 0, 3])
