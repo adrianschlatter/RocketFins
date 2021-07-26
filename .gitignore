@@ -1,0 +1,5 @@
+build/*.stl
+.DS_Store
+.vscode
+*.stl
+*.psd
