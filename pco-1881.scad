@@ -44,6 +44,6 @@ module pco1881 () {
 intersection() {
     color("Green")
         translate([-50, 0, -50])
-            cube(100, 100, 100);
+            cube(100);
     !pco1881($fn=120);
 }
